@@ -1,0 +1,32 @@
+My boolean expression parser is called bepe.cpp
+I can't give any more time to that problem. It can parse into a stack and a map and evaluates 
+semi-well but I dont have time to write the outputs for it. Sorry for the confusion. have a nice day :)
+
+Problem 4)
+a)
+By calling resize you are making a copy of the list but to double of the original size
+then copying over the data in the original list. this takes a runtime of O(n). however, 
+for amortized runtime it is the average thus the answer would be O(n)/n. Therefore, the 
+answer must be: O(1)
+
+b)
+The resize would cost n
+how many times it happens is sqrt(n)
+thus n/sqrt(n)
+answer must be: O(sqrt(n))
+
+c)
+the worst sequence would be poping till half of the size of the list
+thus calling the resize and copy to an array size of half of the original array size.
+Then after that pushing till the array list resizes to doubles the size 
+to add more space for the new push. This is not a good idea because the runtime of the 
+resize is high O(n) and the number of operations is a constant. Therefore, everytime you 
+do an operation the worst case would be O(n). 
+
+d)
+In the same bad sequence pattern, the worst case for each operation would still be O(n) for 
+both push and pop because the cost is the same and the number of times this operation happens
+ is still a constant. It is not a better solution because in the long run it is still the same. 
+ 
+
+

@@ -1,0 +1,211 @@
+#include <iostream>
+#include <set>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <cctype>
+#include <sstream>
+#include <locale>
+
+#include "webpage.h"
+#include "crawler.h"
+#include "mdparser.h"
+#include "util.h"
+
+//#include <QApplication>
+
+using namespace std;
+
+std::map<std::string, std::string> parseConfiguration(std::string configuration_filename);
+
+int main(int argc, char* argv[])
+{
+
+    string configuration_filename;
+    if(argc < 2) {
+        //cerr << "usage: ./search index_file...Please provide an index file" << endl;
+        //User did not specify configuration
+        configuration_filename = "config.txt";
+    }
+    else
+    {
+
+        configuration_filename = argv[1];
+    }
+    //cout << "parsing configuration file " << endl;
+    map<string, string> configurationParameters = parseConfiguration(configuration_filename);
+    string output_filename = configurationParameters["OUTPUT_FILE"];
+    string seed_filename = configurationParameters["INDEX_FILE"];
+        string path;
+    ofstream out;
+    out.open(output_filename.c_str(),ios_base::out);
+    PageParser *parser = new MDparser();
+    my_engine.add_parse_from_index_file(seed_filename, parser);
+    //cout << "done adding parse from index file" << endl;
+    my_crawler.crawler_add_parse_from_index_file(seed_filename, parser, path);
+    //cout << "done with crawler add parse from index file" << endl;
+    my_crawler.populate_file(out);
+    out.close();
+
+
+    return 0;
+}
+
+
+
+std::map<std::string, std::string> parseConfiguration(std::string configuration_filename)
+{
+    //cout << "testing" << endl; 
+    ifstream inFile;
+
+    map<string, string> configurationParameters;
+    inFile.open(configuration_filename.c_str());
+
+    //stringstream iss;
+    //iss << inFile.rdbuf();
+    string line;
+    bool stop = false;
+    while(getline(inFile, line))
+    {
+        //cout << "new line" << endl;
+        stringstream iss(line);
+        iss>>ws;
+        char ch;
+        string parameter;
+        string value;
+        while(iss.get(ch))
+        {
+          stop = false;
+            if(ch == ' ')
+            {
+                iss.get(ch);
+                while(ch == ' ')
+                {
+                    if(iss.get(ch)) continue;
+                    else break;
+                }
+                continue;
+            }
+            else if(ch == '#')
+            {
+                //cout << "testing comments" << endl;
+                break;
+            }
+           // else 
+           // {
+              //cout << "ch: " << "|"<< ch<< "|"<< endl;
+                while(ch!= ' '&& ch!='=')
+                {
+                    parameter+=ch;
+                                 // cout << "ch: " << "|"<< ch<< "|"<< endl;
+                    iss.get(ch);
+                   // break;
+                }
+
+                iss.get(ch);
+                if(ch == ' ')
+                {
+                    iss.get(ch);
+                    while(ch == ' ') //keeps reading over the extra spaces but doesnt put them to the ofstream
+                    {
+                        if(iss.get(ch)) continue;
+                        else break; //happens at the end of the document
+                    }
+                }
+                if(ch == '=')
+                {
+                 // cout << "equals hit" << endl;
+                  iss.get(ch);
+                }
+                //cout << "parameter: "<<"|" <<parameter <<"|"<< endl;
+
+                if(ch == ' ')
+                {
+                    iss.get(ch);
+                    while(ch == ' ') //keeps reading over the extra spaces but doesnt put them to the ofstream
+                    {
+                        if(iss.get(ch)) continue;
+                        else break; //happens at the end of the document
+                    }
+                }
+                //cout << ch << endl;
+                //break;
+                if(ch == '.')
+                {
+                  iss.get(ch);
+                 // cout << "period hit" << endl;
+                  //break;
+                  if(ch == '/')
+                  {
+                    //cout << "slash hit" << endl;
+                    iss.get(ch);
+                    if(ch == ' ')
+                    {
+                        iss.get(ch);
+                        while(ch == ' ') //keeps reading over the extra spaces but doesnt put them to the ofstream
+                        {
+                            if(iss.get(ch)) continue;
+                            else break; //happens at the end of the document
+                        }
+                    } 
+                    
+                    while(ch!= ' '&& ch!= '#')
+                    {
+                      //cout << "hi" << endl;
+                        value+=ch;
+                                      //cout << "ch: " << "|"<< ch<< "|  ";
+                        if(iss.get(ch)) continue;
+                        else break;
+                        //break;
+                    } 
+
+                    //cout << endl;
+                  //cout << "value: "<<"|" <<value <<"|"<< endl;
+                  configurationParameters[parameter]= value;
+                  value="";
+                  parameter=""; 
+                  stop = true;
+                  //break;
+
+//cout << "value: "<<"|" <<value <<"|"<< endl;
+                  }
+ 
+                }
+                else
+                {
+                  while(ch!= ' ' && ch!= '#')
+                  {
+                      value+=ch;
+                                    //cout << "|"<< ch<< "| ";
+                      if(iss.get(ch))
+                      {
+                        continue;
+                      }
+                      else break; 
+
+                     // break;
+                  }
+                  //cout << endl;
+                  //cout << "value: "<<"|" <<value <<"|"<< endl; 
+                  configurationParameters[parameter]= value;
+                  value="";
+                  parameter="";   
+                  stop = true;
+                }
+            //}
+            //break;
+            if(stop == true )
+            {
+              break;
+            }
+        }
+
+    }
+
+    // for( map<string, string >::iterator it1 = configurationParameters.begin(); it1!= configurationParameters.end(); ++it1)
+    // {
+    //     cout << (*it1).first << " " << (*it1).second << endl;
+    // }
+    return configurationParameters;
+
+}

@@ -1,0 +1,133 @@
+#include "form.h"
+#include <iostream>
+#include <set>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <cctype>
+#include <sstream>
+#include <locale>
+#include <QApplication>
+
+using namespace std;
+
+void Form::SearchClicked()
+{
+    FileDisplayBox->clear();
+
+    MySetWebPage result;
+    if(UserInputBox->toPlainText().isEmpty())
+    {
+        return;
+    }
+
+
+
+    istringstream iss(UserInputBox->toPlainText().toStdString());
+    vector<string> query_words;
+    string query_word;
+    while(iss>>ws>>query_word)
+    {
+        query_word = convToLower(query_word);
+        query_words.push_back(query_word);
+    }
+    if(AndButton->isChecked())
+    {
+        result = my_engine.and_method( query_words);
+    }
+    else if(OrButton->isChecked())
+    {
+        result = my_engine.or_method( query_words);
+    }
+    else if(OneWordButton->isChecked())
+    {
+        if(query_words.size() > 1)
+        {
+            return;
+        }
+        else result = my_engine.one_word_method(query_word);
+    }
+    if(SortedByFilenameButton->isChecked())
+    {
+    
+    }
+    else if(SortedByOutgoingButton->isChecked())
+    {
+    
+    }
+    else if(SortedByIncomingButton->isChecked())
+    {
+    
+    }
+
+    for(set<WebPage*>::iterator it2 = result.begin(); it2!= result.end(); ++it2)
+    {
+        QString Qstringythingy = QString::fromStdString((*it2)->filename());
+        FileDisplayBox->addItem(Qstringythingy);
+    }
+    return;
+}
+
+Form::Form(string index_filename)
+{
+    PageParser *parser = new MDparser();
+    my_engine.add_parse_from_index_file(index_filename, parser);
+    overallLayout = new QHBoxLayout();
+    leftLayout = new QVBoxLayout();
+    rightLayout = new QVBoxLayout();
+    overallLayout->addLayout(leftLayout);
+    overallLayout->addLayout(rightLayout);
+
+    //Left Layout setup
+    leftLayoutLabel = new QLabel("Search box:");
+    UserInputBox = new QTextEdit();
+    AndButton = new QRadioButton("AND CASE");
+    OrButton = new QRadioButton("OR CASE");
+    OneWordButton = new QRadioButton("ONE WORD CASE");
+    SearchButton = new QPushButton("SEARCH");
+    connect(SearchButton,SIGNAL(clicked()),this,SLOT(SearchClicked()));
+    QuitButton = new QPushButton("QUIT");
+    connect(QuitButton,SIGNAL(clicked()),this,SLOT(quit()));
+
+    leftLayout->addWidget(leftLayoutLabel);
+    leftLayout->addWidget(UserInputBox);
+    leftLayout->addWidget(AndButton);
+    leftLayout->addWidget(OrButton);
+    leftLayout->addWidget(OneWordButton);
+    leftLayout->addWidget(SearchButton);
+    leftLayout->addWidget(QuitButton);
+
+    //right layout
+    FileDisplayBox = new QListWidget;
+
+    rightLayoutLabel = new QLabel("Files:");
+    SortedByFilenameButton = new QRadioButton("Sorted by filename");
+    SortedByOutgoingButton = new QRadioButton("Sorted by outgoing links");
+    SortedByIncomingButton = new QRadioButton("Sorted by incoming links");
+
+    rightLayout->addWidget(rightLayoutLabel);
+    rightLayout->addWidget(FileDisplayBox);
+    rightLayout->addWidget(SortedByFilenameButton);
+    rightLayout->addWidget(SortedByOutgoingButton);
+    rightLayout->addWidget(SortedByIncomingButton);
+
+    //Setting the layout
+    setLayout(overallLayout);
+
+    WordDisplayBox = new QListWidget();
+}
+
+Form::~Form()
+{
+
+}
+
+void Form::quit()
+{
+    QApplication::quit();
+}
+
+
+
+
+

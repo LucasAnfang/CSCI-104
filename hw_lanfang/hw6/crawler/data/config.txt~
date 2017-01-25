@@ -1,0 +1,8 @@
+# My configuration file
+#Index_FILE  =     ./dta/index.txt 
+INDEX_FILE =./data/index.txt
+# Here are some important parameters
+PI=3.14159  #circumference of a circle
+E=2.71828 # Base of the natural logarithm
+# The output file is given below
+OUTPUT_FILE = data/myoutput.txt

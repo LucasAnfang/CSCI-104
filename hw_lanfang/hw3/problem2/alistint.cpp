@@ -1,0 +1,187 @@
+#include "alistint.h"
+//#include <stdexcept>
+AListInt::AListInt()
+{
+   _cap = 5; //set the _cap if no cap is provided to 5
+   _size = 0;
+   _data = new int [_cap];
+}
+
+AListInt::AListInt(int cap)
+{
+   if(cap < 0)
+   {
+      cap = 5;
+   }
+   _cap = cap; //set the _cap if cap is provided to cap
+   _size = 0;
+   _data = new int [_cap]; 
+}
+
+AListInt::AListInt(const AListInt& other)
+{
+    _cap = other._cap;
+    _size = other._size;
+    _data = new int [_cap];
+    int* newdata = _data;
+    int* olddata = other._data;
+   
+    for(unsigned int i = 0; i < _size; i++)
+    {
+      newdata[i] = olddata[i];
+
+    }
+}
+
+AListInt& AListInt::operator=(const AListInt& other)
+{
+    _cap = other._cap;
+    _size = other._size;
+    //_data = new int [_cap];
+    int* newdata = new int [_cap];
+    int* olddata = other._data;
+   
+    for(unsigned int i = 0; i < _size; i++)
+    {
+      newdata[i] = olddata[i]; 
+    }
+    delete[] _data;
+    _data = newdata;
+    return *this;
+}
+
+AListInt::~AListInt()
+{
+   delete[] _data;
+}
+
+int AListInt::size() const
+{
+   return _size;
+}
+
+bool AListInt::empty() const
+{
+   return _size == 0;
+}
+
+void AListInt::insert (int pos, const int& val)
+{
+   if(_size == _cap)
+   {
+      resize();
+   }
+   
+   if((unsigned int) pos > _size || pos < 0)
+   {
+      return;
+   }
+   
+   if((unsigned int) pos < _size)
+   {
+      for(int i = _size-1; i >= pos; i--)
+      {
+         _data[i+1] = _data[i];
+      }      
+   }
+   _data[pos] = val;
+   _size++;
+}
+
+void AListInt::remove (int pos)
+{
+   if(_size == 0)
+   {
+      return;
+   }
+   
+   if((unsigned int) pos >= _size || pos < 0)
+   {
+      return;
+   }
+   
+   for(int i = pos; i <(int) _size-1; i++)
+   {
+      _data[i] = _data[i+1];
+   }
+   _size--;  
+}
+
+void AListInt::set (int pos, const int& val)
+{
+   if((unsigned int) pos > _size || pos < 0)
+   {
+      return;
+   }
+   _data[pos] = val;
+}
+
+int& AListInt::get (int pos)
+{
+   if((unsigned int) pos > _size || pos < 0)
+   {
+      return _data[0];
+      //throw std::invalid_argument("bad location");
+   }
+   return _data[pos];  
+}
+
+int const & AListInt::get (int pos) const
+{
+   if((unsigned int) pos > _size || pos < 0)
+   {
+      return _data[0];
+   }
+   return _data[pos]; 
+}
+
+AListInt AListInt::operator+(const AListInt& other) const
+{
+   AListInt newlist(this->_size + other._size);
+   int scan = 0;
+   for(unsigned int i = 0; i < this->_size; i++)
+   {      
+      newlist.insert(scan++, _data[i]);      
+   }
+   for(unsigned int i = 0; i < other._size; i++)
+   {
+      newlist.insert(scan++, other._data[i]);
+   }
+   return newlist;
+}
+
+int const & AListInt::operator[](int pos) const
+{
+   if((unsigned int) pos > _size || pos < 0)
+   {
+      return _data[0];
+   }
+   return _data[pos]; 
+}
+
+int& AListInt::operator[](int pos)
+{
+   if((unsigned int) pos > _size || pos < 0)
+   {
+      return _data[0];
+   }
+   return _data[pos];  
+}
+
+void AListInt::resize()
+{
+   int newcap = 2*_cap;
+   int* newdata = new int [newcap];
+   int* olddata = _data; 
+   for(unsigned int i = 0; i < _size; i++)
+   {
+     newdata[i] = olddata[i];
+   }
+   _cap = newcap;
+   delete[] _data;
+   _data = newdata;
+}
+
+
+
+

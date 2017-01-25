@@ -1,0 +1,41 @@
+GXX = g++
+CPPFLAGS = -g -Wall
+GTEST_LL = -I /usr/local/opt/gtest/include/ -l gtest -l gtest_main -pthread
+
+BINDIR = bin
+
+alisttest: directory bin/alistint.o alisttest.cpp
+	${GXX} ${CPPFLAGS}  bin/alistint.o alisttest.cpp $(GTEST_LL) -o bin/alisttest
+
+stackinttest: directory bin/alistint.o bin/stackint.o stackinttest.cpp
+	${GXX} ${CPPFLAGS}  bin/alistint.o bin/stackint.o stackinttest.cpp -o bin/stackinttest
+
+bepe: directory bin/alistint.o bin/stackint.o bepe.cpp 
+	${GXX} ${CPPFLAGS}  bin/alistint.o bin/stackint.o bepe.cpp -o bin/bepe
+	
+bin/alistint.o: alistint.cpp alistint.h
+	${GXX} ${CPPFLAGS} -c -o bin/alistint.o alistint.cpp
+	
+bin/stackint.o: stackint.cpp stackint.h
+	${GXX} ${CPPFLAGS} -c -o bin/stackint.o stackint.cpp
+	
+directory: ${BINDIR}
+
+${BINDIR}:
+	mkdir -p $@ 
+	touch $@/.dirstamp
+
+.PHONY: tests
+
+tests: alisttest stackinttest
+	-@$(BINDIR)/alisttest
+	-@echo "--- All Tested!---"
+
+	-@$(BINDIR)/stackinttest
+	-@echo "--- All Tested!---"	
+	
+.PHONY: clean
+
+clean:
+	rm -rf bin
+

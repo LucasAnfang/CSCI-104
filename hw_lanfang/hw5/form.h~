@@ -1,0 +1,55 @@
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLabel>
+#include <QString>
+#include <QFormLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QDialog>
+#include <QListWidget>
+#include <QTextLayout>
+#include <QRadioButton>
+#include <QTextEdit>
+#include "myset.h"
+#include "webpage.h"
+#include "searcheng.h"
+#include "mdparser.h"
+#include "util.h"
+
+
+class Form : public QWidget
+{
+Q_OBJECT
+
+public:
+   Form(string filename);
+   ~Form();
+   
+private slots:
+   void quit();
+   MySetWebPage SearchClicked();
+   
+   
+private:
+   QHBoxLayout *overallLayout;
+   
+   QListWidget *WordDisplayBox;
+   
+   QVBoxLayout *rightLayout;
+   QLabel *rightLayoutLabel;
+   QListWidget *FileDisplayBox;
+   QRadioButton *SortedByFilenameButton;
+   QRadioButton *SortedByOutgoingButton;
+   QRadioButton *SortedByIncomingButton;   
+   
+   QVBoxLayout *leftLayout;
+   QLabel *leftLayoutLabel;
+   QTextEdit *UserInputBox;
+   QRadioButton *AndButton;
+   QRadioButton *OrButton;
+   QRadioButton *OneWordButton;
+   QPushButton *SearchButton;
+   QPushButton *QuitButton;
+   SearchEng my_engine;
+
+};
